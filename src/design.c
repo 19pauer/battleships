@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <ctype.h>
 #define BOARD_W (10)
 #define BOARD_H (10)
 
@@ -12,6 +13,8 @@ typedef Pos Dir;
 typedef struct Tile {
     enum {
         TileBlank,
+        TileShip, // one of your ships
+        TileShipHit, // one of your ships is hit
         TileTried,
         TileHit,
     } status;
@@ -26,12 +29,18 @@ void boardInit(Board *b, size_t w, size_t h) {
     b->h     = h;
 }
 void boardRender(Board *b) {
-    for (size_t h = 0; h < b->h; h++) {
-        for (size_t w = 0; w < b->w; w++) {
+    for (long h = b->h-1; h >= 0; h--) {
+        for (long w = 0; w < b->w; w++) {
             Tile *tile = &b->tiles[w + h*b->w];
 
             switch (tile->status) {
             case TileBlank: {
+                printf(" ");
+            } break;
+            case TileShip: {
+                printf("@");
+            } break;
+            case TileShipHit: {
                 printf("+");
             } break;
             case TileTried: {
@@ -91,10 +100,45 @@ bool playerAddShip(Player *p, Pos pos, Dir dir, size_t length) {
 
     return shipInit(cur, &p->board, pos, dir, length);
 }
+void playerDraw(Player *p) {
+    // clear own ships from board
+    for (size_t x = 0; x < p->board.w; x++) {
+        for (size_t y = 0; y < p->board.h; y++) {
+            Tile *t = &p->board.tiles[x + y*p->board.w];
+            switch (t->status) {
+            case TileShip:
+            case TileShipHit:
+                t->status = TileBlank;
+                break;
+            }
+        }
+    }
+
+    for (size_t i = 0; i < p->ships_num; i++) {
+        Ship *s = &p->ships[i];
+        for (size_t j = 0; j < s->segments_num; j++) {
+            ShipSegment *e = &s->segments[j];
+            p->board.tiles[e->pos.x + e->pos.y*p->board.w].status = e->hit ? TileShipHit : TileShip;
+        }
+    }
+}
+
+Pos getInputPos() {
+    Pos r;
+    scanf("%c:%i", &r.x, &r.y);
+    r.x = toupper(r.x)-'A';
+    return r;
+}
 
 int main() {
     Player player[2];
     playerInit(&player[0], BOARD_W, BOARD_H, 128);
     playerInit(&player[1], BOARD_W, BOARD_H, 128);
+    playerAddShip(&player[0], (Pos){0, 0}, (Dir){0, 1}, 5);
+    playerAddShip(&player[0], (Pos){9, 9}, (Dir){0, -1}, 5);
+    playerDraw(&player[0]); playerDraw(&player[1]);
     boardRender(&player[0].board);
+
+    Pos p = getInputPos();
+    printf("%i, %i\n", p.x, p.y);
 }
