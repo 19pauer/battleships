@@ -29,7 +29,16 @@ void boardInit(Board *b, size_t w, size_t h) {
     b->h     = h;
 }
 void boardRender(Board *b) {
+    printf("  ");
+    for (long w = 0; w < b->w; w++) {
+        printf("%c", 'A' + w);
+    } printf("\n");
+    printf("  ");
+    for (long w = 0; w < b->w; w++) {
+        printf("_");
+    } printf("\n");
     for (long h = b->h-1; h >= 0; h--) {
+        printf("%c|", '0' + (b->h - h - 1));
         for (long w = 0; w < b->w; w++) {
             Tile *tile = &b->tiles[w + h*b->w];
 
