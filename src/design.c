@@ -132,8 +132,10 @@ void playerDraw(Player *p) {
     }
 }
 
-Pos getInputPos() {
+Pos getInputPos(const char *msg) {
     Pos r;
+    printf("%s\n", msg);
+    printf("> ");
     scanf("%c:%i", &r.x, &r.y);
     r.x = toupper(r.x)-'A';
     return r;
@@ -148,6 +150,6 @@ int main() {
     playerDraw(&player[0]); playerDraw(&player[1]);
     boardRender(&player[0].board);
 
-    Pos p = getInputPos();
+    Pos p = getInputPos("Enter position");
     printf("%i, %i\n", p.x, p.y);
 }
