@@ -31,10 +31,10 @@ void boardInit(Board *b, size_t w, size_t h) {
 void boardRender(Board *b) {
     printf("  ");
     for (long w = 0; w < b->w; w++) {
-        printf("\e[4m%c\e[0m", 'A' + w);
+        printf("\e[4m%c\e[0m", (char)('A' + w));
     } printf("\n");
     for (long h = b->h-1; h >= 0; h--) {
-        printf("%c|", '0' + (b->h - h - 1));
+        printf("%c|", (char)('0' + (b->h - h - 1)));
         for (long w = 0; w < b->w; w++) {
             Tile *tile = &b->tiles[w + h*b->w];
 
@@ -132,8 +132,9 @@ Pos getInputPos(const char *msg) {
     Pos r;
     printf("%s\n", msg);
     printf("> ");
-    scanf("%c:%i", &r.x, &r.y);
-    r.x = toupper(r.x)-'A';
+    char tmp = 0;
+    scanf("%c:%i", &tmp, &r.y);
+    r.x = toupper(tmp)-'A';
     return r;
 }
 
