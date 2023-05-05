@@ -114,6 +114,34 @@ bool playerAddShip(Player *p, Pos pos, Dir dir, size_t length) {
     p->ships[p->ships_num++] = cur;
     return true;
 }
+size_t playerNonHitShipTiles(Player *p) {
+    size_t count = 0;
+    for (size_t i = 0; i < p->ships_num; i++) {
+        for (size_t s = 0; s < p->ships[i].segments_num; s++) {
+            if (!p->ships[i].segments[s].hit) count++;
+        }
+    }
+    return count;
+}
+void playerTryHit(Player *p, Board *b, Pos pos) { // this player attempted to hit another
+    bool hit = false;
+    for (size_t i = 0; i < p->ships_num; i++) {
+        for (size_t s = 0; s < p->ships[i].segments_num; s++) {
+            if (p->ships[i].segments[s].pos.x == pos.x &&
+                p->ships[i].segments[s].pos.y == pos.y) {
+                p->ships[i].segments[s].hit = true;
+                hit = true;
+                break;
+            }
+        }
+    }
+
+    if (!hit) {
+        b->tiles[pos.x + pos.y*b->w].status = TileTried;
+    }
+}
+void playerHit(Player *p, Board *b, Pos pos) { // this player was hit by another
+}
 void playerDraw(Player *p) {
     // clear own ships from board
     for (size_t x = 0; x < p->board.w; x++) {
@@ -194,5 +222,18 @@ int main() {
     Player player[2];
     playerInit(&player[0], BOARD_W, BOARD_H, 128);
     playerInit(&player[1], BOARD_W, BOARD_H, 128);
+    printf("-- Setup player 1 --\n");
     setupPlayer(&player[0]);
+    printf("-- Setup player 2 --\n");
+    setupPlayer(&player[1]);
+
+    // main loop
+    while (1) {
+        if (playerNonHitShipTiles(&player[0]) <= 0) {
+            printf("Player 1 won\n");
+        }
+        if (playerNonHitShipTiles(&player[1]) <= 0) {
+            printf("Player 2 won\n");
+        }
+    }
 }
