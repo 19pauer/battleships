@@ -41,7 +41,7 @@ void boardRender(Board *b) {
 
             switch (tile->status) {
             case TileBlank: {
-                printf(" ");
+                printf("~");
             } break;
             case TileShip: {
                 printf("@");
