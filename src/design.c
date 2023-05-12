@@ -228,6 +228,7 @@ int main() {
     setupPlayer(&player[1]);
 
     // main loop
+    size_t turn = 0;
     while (1) {
         if (playerNonHitShipTiles(&player[0]) <= 0) {
             printf("Player 1 won\n");
@@ -235,5 +236,17 @@ int main() {
         if (playerNonHitShipTiles(&player[1]) <= 0) {
             printf("Player 2 won\n");
         }
+
+        Player *p = &player[turn%2];
+        if (turn%2 == 0) { // player 1
+            printf("Player 1 turn begin\n");
+        }
+        else if (turn%2 == 1) { // player 2
+            printf("Player 2 turn begin\n");
+        }
+        printf("Enter target position\n");
+        Pos target_pos = getInputPos();
+
+        turn++;
     }
 }
