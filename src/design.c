@@ -123,7 +123,9 @@ size_t playerNonHitShipTiles(Player *p) {
     }
     return count;
 }
-void playerTryHit(Player *p, Board *b, Pos pos) { // this player attempted to hit another
+void playerHit(Player *p, Pos pos) { // this player was hit by another
+}
+void playerTryHit(Player *t, Player *p, Pos pos) { // this player attempted to hit another
     bool hit = false;
     for (size_t i = 0; i < p->ships_num; i++) {
         for (size_t s = 0; s < p->ships[i].segments_num; s++) {
@@ -137,10 +139,8 @@ void playerTryHit(Player *p, Board *b, Pos pos) { // this player attempted to hi
     }
 
     if (!hit) {
-        b->tiles[pos.x + pos.y*b->w].status = TileTried;
+        t->board.tiles[pos.x + pos.y*p->board.w].status = TileTried;
     }
-}
-void playerHit(Player *p, Board *b, Pos pos) { // this player was hit by another
 }
 void playerDraw(Player *p) {
     // clear own ships from board
@@ -232,20 +232,22 @@ int main() {
     while (1) {
         if (playerNonHitShipTiles(&player[0]) <= 0) {
             printf("Player 1 won\n");
+            break;
         }
         if (playerNonHitShipTiles(&player[1]) <= 0) {
             printf("Player 2 won\n");
+            break;
         }
 
         Player *p = &player[turn%2];
-        if (turn%2 == 0) { // player 1
-            printf("Player 1 turn begin\n");
-        }
-        else if (turn%2 == 1) { // player 2
-            printf("Player 2 turn begin\n");
-        }
+        playerDraw(p);
+        boardRender(&p->board);
+
+        printf("Player %i turn begin\n", (int)((turn%2) + 1));
+
         printf("Enter target position\n");
         Pos target_pos = getInputPos();
+        playerTryHit(p, &player[(turn+1)%2], target_pos);
 
         turn++;
     }
