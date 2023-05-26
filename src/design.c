@@ -33,6 +33,7 @@ void boardRender(Board *b) {
     printf("  ");
     for (size_t w = 0; w < b->w; w++) {
         printf("\e[4m%c\e[0m", (char)('0' + w));
+        if (w != b->w-1) printf("\e[4m \e[0m");
     } printf("\n");
     for (size_t h = 0; h < b->h; h++) {
         printf("%c|", (char)('0' + h));
@@ -56,6 +57,7 @@ void boardRender(Board *b) {
                 printf("X");
             } break;
             }
+            printf(" ");
         }
         printf("\n");
     }
@@ -177,6 +179,7 @@ Dir getInputDir() {
     char str[128+1];
     scanf("%s", str);
 
+    // parse direction
     if (strcmp("up",    str) == 0) return (Dir){ 0, -1};
     if (strcmp("down",  str) == 0) return (Dir){ 0,  1};
     if (strcmp("left",  str) == 0) return (Dir){-1,  0};
@@ -185,6 +188,7 @@ Dir getInputDir() {
     return (Dir){0, 0};
 }
 void setupPlayer(Player *p) {
+    // create the ships that the player will place
     struct {
         const char *name;
         size_t      len;
